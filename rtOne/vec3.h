@@ -1,0 +1,121 @@
+﻿#ifndef __RT1_VEC3_H
+#define __RT1_VEC3_H
+
+#include <math.h>
+#include <stdlib.h>
+#include <iostream>
+#include <random>
+
+class vec3 {
+public:
+	vec3() {};
+	vec3(float e0, float e1, float e2) {
+		e[0] = e0;
+		e[1] = e1;
+		e[2] = e2;
+	}
+
+	inline float x() const { return e[0]; }
+	inline float y() const { return e[1]; }
+	inline float z() const { return e[2]; }
+	inline float r() const { return e[0]; }
+	inline float g() const { return e[1]; }
+	inline float b() const { return e[2]; }
+
+	inline const vec3& operator+() const { return *this; }
+	inline vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
+	inline float operator[](int i) const { return e[i]; }
+	inline float& operator[](int i) { return e[i]; }
+
+	inline vec3& operator+=(const vec3& vec2) { e[0] += vec2.e[0]; e[1] += vec2.e[1]; e[2] += vec2.e[2]; return *this; }
+	inline vec3& operator-=(const vec3& vec2) { e[0] -= vec2.e[0]; e[1] -= vec2.e[1]; e[2] -= vec2.e[2]; return *this; }
+	inline vec3& operator/=(const vec3& vec2) { e[0] /= vec2.e[0]; e[1] /= vec2.e[1]; e[2] /= vec2.e[2]; return *this; }
+	inline vec3& operator*=(const vec3& vec2) { e[0] *= vec2.e[0]; e[1] *= vec2.e[1]; e[2] *= vec2.e[2]; return *this; }
+	inline vec3& operator/=(const float other) { e[0] /= other; e[1] /= other; e[2] /= other; return *this; }
+	inline vec3& operator*=(const float other) { e[0] *= other; e[1] *= other; e[2] *= other; return *this; }
+
+	inline float length() const {
+		return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+	}
+	inline float length2() const {
+		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+	}
+
+	inline void make_unit() {
+		float k = 1.0 / sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+		e[0] *= k; e[1] *= k; e[2] *= k;
+	}
+
+	float e[3];
+};
+
+inline std::istream& operator>>(std::istream &is, vec3 &t) {
+	is >> t.e[0] >> t.e[1] >> t.e[2];
+	return is;
+}
+
+inline std::ostream& operator<<(std::ostream &os, vec3 &t) {
+	os << t.e[0] << " " << t.e[1] << " " << t.e[2];
+	return os;
+}
+
+inline vec3 operator+(const vec3 &v0, const vec3 &v1) {
+	return vec3(v0.e[0] + v1.e[0], v0.e[1] + v1.e[1], v0.e[2] + v1.e[2]);
+}
+
+inline vec3 operator-(const vec3 &v0, const vec3 &v1) {
+	return vec3(v0.e[0] - v1.e[0], v0.e[1] - v1.e[1], v0.e[2] - v1.e[2]);
+}
+
+inline vec3 operator/(const vec3 &v0, const vec3 &v1) {
+	return vec3(v0.e[0] / v1.e[0], v0.e[1] / v1.e[1], v0.e[2] / v1.e[2]);
+}
+
+inline vec3 operator*(const vec3 &v0, const vec3 &v1) {
+	return vec3(v0.e[0] * v1.e[0], v0.e[1] * v1.e[1], v0.e[2] * v1.e[2]);
+}
+
+inline vec3 operator*(const float t, const vec3 &v) {
+	return vec3(t * v.e[0], t * v.e[1], t * v.e[2]);
+}
+
+inline vec3 operator/(const vec3 &v, const float t) {
+	return vec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
+}
+
+inline float dot(const vec3 &v1, const vec3 &v2) {
+	return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
+}
+
+inline vec3 cross(const vec3 &v1, const vec3 &v2) {
+	return vec3((v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1]),
+		-(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0]),
+		(v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
+}
+
+inline vec3 unit_vector(const vec3 &v1) {
+	return v1 / v1.length();
+}
+
+inline vec3 reflect(const vec3& v, const vec3& N) {
+	return v - 2 * dot(v, N)*N;
+}
+
+float getRandom();
+
+inline vec3 random_in_unit_sphere() {
+	vec3 p;
+	do {
+		p = vec3(getRandom(), getRandom(), getRandom()) - vec3(0.5, 0.5, 0.5);
+	} while (p.length2() >= 1);
+	return p;
+}
+
+float getRandom() {
+	static std::random_device rd;
+	static std::mt19937 en(rd());
+	static std::uniform_real_distribution<float> dist(0, 1);
+	return dist(en);
+}
+
+#endif

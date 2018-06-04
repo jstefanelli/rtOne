@@ -1,0 +1,8 @@
+x64/
+Debug/
+Release/
+rtOne/out.ppm
+rtOne/x64
+rtOne/Debug
+rtOne/Release
+.vs/
